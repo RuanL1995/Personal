@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 
@@ -98,9 +99,20 @@ public sealed record VacationRequirements(
     decimal Budget,
     JsonElement Preferences)
 {
+    [JsonIgnore]
     public string PreferencesText => Preferences.ValueKind == JsonValueKind.Array
-        ? string.Join(", ", Preferences.EnumerateArray().Select(item => item.GetString() ?? item.ToString()))
-        : Preferences.GetString() ?? Preferences.ToString();
+        ? string.Join(", ", Preferences.EnumerateArray().Select(FormatPreference))
+        : FormatPreference(Preferences);
+
+    private static string FormatPreference(JsonElement value) => value.ValueKind switch
+    {
+        JsonValueKind.String => value.GetString() ?? string.Empty,
+        JsonValueKind.Object => string.Join(", ", value.EnumerateObject()
+            .Select(property => $"{property.Name}: {FormatPreference(property.Value)}")),
+        JsonValueKind.Array => string.Join(", ", value.EnumerateArray().Select(FormatPreference)),
+        JsonValueKind.Null or JsonValueKind.Undefined => string.Empty,
+        _ => value.ToString()
+    };
 
     public static VacationRequirements FromText(string text) =>
         new("Demo traveler", "JNB", "CPT", DateTime.UtcNow.AddMonths(2).ToString("yyyy-MM-dd"),
