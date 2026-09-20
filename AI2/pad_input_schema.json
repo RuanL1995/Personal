@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["origin", "destination", "departureDate"],
+  "properties": {
+    "origin": { "type": "string", "minLength": 3 },
+    "destination": { "type": "string", "minLength": 3 },
+    "departureDate": { "type": "string", "format": "date" },
+    "returnDate": { "type": ["string", "null"], "format": "date" },
+    "travelers": { "type": "integer", "minimum": 1, "default": 1 }
+  },
+  "additionalProperties": false
+}

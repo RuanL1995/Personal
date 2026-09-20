@@ -1,0 +1,11 @@
+{
+  "name": "vacation-planner-local-flow",
+  "description": "Synthetic local flow; replace no endpoints or secrets.",
+  "steps": [
+    { "action": "searchFlights", "method": "POST", "path": "/api/flights/search", "headers": { "Idempotency-Key": "{{runId}}" } },
+    { "action": "bookFlight", "method": "POST", "path": "/api/bookings", "headers": { "Idempotency-Key": "{{runId}}-booking" } },
+    { "action": "sendBookingWebhook", "method": "POST", "path": "/api/webhooks/booking", "signature": "hmac-sha256" },
+    { "action": "notifyPad", "method": "POST", "path": "/api/pad/callback" }
+  ],
+  "security": { "secretSource": "environment:VACATION_WEBHOOK_SECRET" }
+}
