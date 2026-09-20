@@ -36,7 +36,7 @@ app.MapPost("/api/plans/{id:guid}/callback", async (Guid id, HttpRequest req, Pl
     store.Audit("callback", id, body); return Results.Ok(new { id, status = callback.Status });
 });
 app.MapGet("/api/audit", (PlanStore store) => Results.Ok(store.AuditEntries));
-app.Run();
+app.Run($"http://localhost:{Environment.GetEnvironmentVariable("PORT") ?? "5180"}");
 
 public sealed record PlanRequest(string Name, string Email, string Origin, string Destination, string DepartDate, string ReturnDate, decimal Budget, string Preferences);
 public sealed record CallbackDto(string Status);
