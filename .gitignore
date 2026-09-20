@@ -1,1 +1,7 @@
 ﻿# Personal repository
+
+**/bin/
+**/obj/
+.env
+.env.*
+!.env.example
