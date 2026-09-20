@@ -1,14 +1,20 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using Azure.Identity;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 
 var apiUrl = Environment.GetEnvironmentVariable("VACATION_API_URL") ?? "http://localhost:5180";
 var websiteUrl = Environment.GetEnvironmentVariable("VACATION_WEBSITE_URL") ?? "http://localhost:5190";
 var offline = args.Contains("--offline", StringComparer.OrdinalIgnoreCase);
+var apiKey = Environment.GetEnvironmentVariable("AZURE_AI_FOUNDRY_API_KEY")
+    ?? Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
 
 Console.WriteLine("Vacation planner ready.");
+if (!offline && string.IsNullOrWhiteSpace(apiKey))
+{
+    Console.Error.WriteLine("Azure API key is missing. Open a new terminal after setting AZURE_AI_FOUNDRY_API_KEY, then try again.");
+    return 1;
+}
 Console.WriteLine(offline
     ? "Running in offline mode (set Azure AI Foundry variables to use the LLM)."
     : "Running online with the Azure AI Foundry Semantic Kernel connector.");
@@ -62,11 +68,11 @@ static async Task<VacationRequirements> AskAzureKernelAsync(string request)
     var deployment = Environment.GetEnvironmentVariable("AZURE_AI_FOUNDRY_DEPLOYMENT")
         ?? "gpt-5-mini-test";
     var kernelBuilder = Kernel.CreateBuilder();
-    var apiKey = Environment.GetEnvironmentVariable("AZURE_AI_FOUNDRY_API_KEY");
-    if (!string.IsNullOrWhiteSpace(apiKey))
-        kernelBuilder.AddAzureOpenAIChatCompletion(deployment, endpoint, apiKey);
-    else
-        kernelBuilder.AddAzureOpenAIChatCompletion(deployment, endpoint, new DefaultAzureCredential());
+    var apiKey = Environment.GetEnvironmentVariable("AZURE_AI_FOUNDRY_API_KEY")
+        ?? Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
+    if (string.IsNullOrWhiteSpace(apiKey))
+        throw new InvalidOperationException("Azure API key is missing. Set AZURE_AI_FOUNDRY_API_KEY or AZURE_OPENAI_API_KEY.");
+    kernelBuilder.AddAzureOpenAIChatCompletion(deployment, endpoint, apiKey);
     var kernel = kernelBuilder.Build();
     var prompt = $$"""
         You are a vacation-planning assistant. Convert the user request below to JSON only.

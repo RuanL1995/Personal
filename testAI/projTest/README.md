@@ -23,12 +23,12 @@ Open `http://localhost:5190` before or after submitting the prompt. The offline 
 ## Azure AI Foundry
 
 The project is preconfigured for the authenticated Azure subscription's
-`aiwork-foundry-swe-test` resource and `gpt-5-mini-test` deployment. It uses
-`DefaultAzureCredential`, so it authenticates through your Azure CLI login
-without storing or committing an API key:
+`aiwork-foundry-swe-test` resource and `gpt-5-mini-test` deployment. Online mode
+uses the Azure API key from `AZURE_AI_FOUNDRY_API_KEY` (or the standard
+`AZURE_OPENAI_API_KEY`) and never silently falls back to an unauthorized
+identity:
 
 ```powershell
-az login
 dotnet run --project semanticTest
 ```
 
