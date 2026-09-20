@@ -2,6 +2,15 @@
 
 Three standalone .NET 9 projects are provided. Existing `AI/` projects are unchanged.
 
+`websiteTest` is browser-hosted at `http://localhost:5090` and proxies search and
+booking requests to the local API at `http://localhost:5080`. Start both apps:
+
+```powershell
+dotnet run --project AI2/apiTest
+dotnet run --project AI2/websiteTest
+Start-Process http://localhost:5090
+```
+
 ## Run and verify
 
 ```powershell

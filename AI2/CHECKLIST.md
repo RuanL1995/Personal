@@ -8,5 +8,7 @@
 - [x] Sign webhook payload with `VACATION_WEBHOOK_SECRET` and `HmacSHA256`; invalid signatures return 401.
 - [x] Pass `X-Correlation-ID` and confirm it is returned on every response.
 - [x] Run `dotnet test AI2/semanticTest` and `dotnet test AI2/websiteTest`.
+- [x] Open the browser-hosted website at `http://localhost:5090` after starting
+  both `apiTest` and `websiteTest`.
 
 All integrations are synthetic/local and must not be pointed at production systems.
